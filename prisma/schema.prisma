@@ -47,6 +47,7 @@ model Beer {
   brewery    Brewery?       @relation(fields: [breweryId], references: [id])
   country    Country?       @relation(fields: [countryId], references: [id])
   categories BeerCategory[]
+  tasteTags  BeerTasteTag[]
 }
 
 model BeerCategory {
@@ -56,4 +57,19 @@ model BeerCategory {
   category   Category @relation(fields: [categoryId], references: [id])
 
   @@id([beerId, categoryId])
+}
+
+model TasteTag {
+  id    Int            @id @default(autoincrement())
+  name  String         @unique
+  beers BeerTasteTag[]
+}
+
+model BeerTasteTag {
+  beerId     Int
+  tasteTagId Int
+  beer       Beer     @relation(fields: [beerId], references: [id])
+  tasteTag   TasteTag @relation(fields: [tasteTagId], references: [id])
+
+  @@id([beerId, tasteTagId])
 }

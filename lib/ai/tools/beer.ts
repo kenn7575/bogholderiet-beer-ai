@@ -3,13 +3,13 @@ import { prisma } from '@/lib/db'
 
 export const listBeersTool = {
   name: 'list_beers',
-  description: 'List beers from the database with optional filters.',
+  description: 'Søg efter øl i databasen med valgfrie filtre.',
   parameters: z.object({
-    search: z.string().optional().describe('Filter by beer title'),
-    brewerySlug: z.string().optional().describe('Filter by brewery slug'),
-    countrySlug: z.string().optional().describe('Filter by country slug'),
-    categorySlug: z.string().optional().describe('Filter by style/category slug'),
-    limit: z.number().int().min(1).max(50).optional().describe('Max results (default 10)'),
+    search: z.string().optional().describe('Filtrer på øl-navn (dansk)'),
+    brewerySlug: z.string().optional().describe('Filtrer på bryggeri-slug'),
+    countrySlug: z.string().optional().describe('Filtrer på land-slug'),
+    categorySlug: z.string().optional().describe('Filtrer på stil/kategori-slug'),
+    limit: z.number().int().min(1).max(50).optional().describe('Maks resultater (standard 10)'),
   }),
   async execute({
     search,
@@ -44,9 +44,9 @@ export const listBeersTool = {
 
 export const listCategoriesTool = {
   name: 'list_categories',
-  description: 'List all beer style categories (e.g. IPA, Stout, Lager).',
+  description: 'Hent alle ølstilkategorier (f.eks. IPA, Stout, Lager).',
   parameters: z.object({
-    search: z.string().optional().describe('Filter categories by name'),
+    search: z.string().optional().describe('Filtrer kategorier på navn (dansk)'),
   }),
   async execute({ search }: { search?: string }) {
     return prisma.category.findMany({

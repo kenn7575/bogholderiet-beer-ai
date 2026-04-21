@@ -1,14 +1,16 @@
 export const Models = {
-  GPT_4O: 'gpt-4o',
-  GPT_4O_MINI: 'gpt-4o-mini',
-  GPT_41: 'gpt-4.1',
-  GPT_41_MINI: 'gpt-4.1-mini',
-  GPT_41_NANO: 'gpt-4.1-nano',
-  O3: 'o3',
-  O4_MINI: 'o4-mini',
+  GPT_5: "gpt-5",
+  GPT_54_NANO: "gpt-5.4-nano-2026-03-17",
+  GEMMA4_E4B: "gemma4:e4b",
+  GEMMA4_E2B: "gemma4:e2b",
 } as const
 
 export type Model = (typeof Models)[keyof typeof Models]
 
-export const DEFAULT_BACKEND_MODEL: Model = Models.GPT_4O
-export const DEFAULT_CHAT_MODEL: Model = Models.GPT_41_MINI
+export type Provider = "openai" | "ollama"
+
+export const DEFAULT_BACKEND_MODEL: Model = Models.GPT_54_NANO
+export const DEFAULT_CHAT_MODEL: Model = Models.GPT_54_NANO
+export const DEFAULT_OLLAMA_MODEL: Model = Models.GEMMA4_E4B
+
+export const OLLAMA_BASE_URL = "http://localhost:11434/v1"

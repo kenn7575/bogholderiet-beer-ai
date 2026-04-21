@@ -3,11 +3,10 @@ import { prisma } from '@/lib/db'
 
 export const listBreweriesTool = {
   name: 'list_breweries',
-  description:
-    'List breweries from the database. Optionally filter by name or limit results.',
+  description: 'Hent bryggerier fra databasen. Filtrer valgfrit på navn.',
   parameters: z.object({
-    search: z.string().optional().describe('Case-insensitive name filter'),
-    limit: z.number().int().min(1).max(100).optional().describe('Max results (default 20)'),
+    search: z.string().optional().describe('Ufølsom navnefiltrering (dansk)'),
+    limit: z.number().int().min(1).max(100).optional().describe('Maks resultater (standard 20)'),
   }),
   async execute({ search, limit }: { search?: string; limit?: number }) {
     return prisma.brewery.findMany({
