@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Country {
+  id          Int    @id
+  name        String
+  slug        String @unique
+  description String
+  link        String
+  count       Int
+  beers       Beer[]
+}
+
+model Brewery {
+  id          Int    @id
+  name        String
+  slug        String @unique
+  description String
+  link        String
+  count       Int
+  beers       Beer[]
+}
+
+model Category {
+  id          Int            @id
+  name        String
+  slug        String         @unique
+  description String
+  link        String
+  count       Int
+  beers       BeerCategory[]
+}
+
+model Beer {
+  id         Int            @id
+  title      String
+  slug       String         @unique
+  url        String
+  breweryId  Int?
+  countryId  Int?
+  brewery    Brewery?       @relation(fields: [breweryId], references: [id])
+  country    Country?       @relation(fields: [countryId], references: [id])
+  categories BeerCategory[]
+}
+
+model BeerCategory {
+  beerId     Int
+  categoryId Int
+  beer       Beer     @relation(fields: [beerId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  @@id([beerId, categoryId])
+}
