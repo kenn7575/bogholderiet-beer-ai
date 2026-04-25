@@ -21,7 +21,9 @@ export const listBeersTool = {
     categorySlug: z
       .string()
       .optional()
-      .describe("Filtrer på stil/kategori-slug"),
+      .describe(
+        'Filtrer på stil/kategori-slug (simpel form uden "øl", f.eks. "hvede" ikke "hvedeoel")'
+      ),
     tasteTagName: z
       .string()
       .optional()
@@ -88,12 +90,15 @@ export const listBeersTool = {
 
 export const listCategoriesTool = {
   name: "list_categories",
-  description: "Hent alle ølstilkategorier (f.eks. IPA, Stout, Lager).",
+  description:
+    'Hent alle ølstilkategorier. Kategorierne er på simpel dansk form uden "øl" – f.eks. "Hvede", "Ale", "IPA", "Stout", "Lager". Søg UDEN ordet "øl".',
   parameters: z.object({
     search: z
       .string()
       .optional()
-      .describe("Filtrer kategorier på navn (dansk)"),
+      .describe(
+        'Filtrer kategorier på navn (dansk). Brug simpel form uden "øl", f.eks. "Hvede" ikke "Hvedeøl"'
+      ),
   }),
   async execute({ search }: { search?: string }) {
     const categories = await prisma.category.findMany({

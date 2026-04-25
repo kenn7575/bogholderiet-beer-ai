@@ -60,14 +60,16 @@ function SuggestOptions({
 }) {
   if (!output) return null
   return (
-    <div className="space-y-3 p-3">
-      <p className="text-sm font-medium">{output.question}</p>
+    <div className="space-y-3 py-2">
+      <p className="text-sm font-medium text-muted-foreground">
+        {output.question}
+      </p>
       <div className="flex flex-wrap gap-2">
         {output.suggestions.map((s) => (
           <button
             key={s.value}
             onClick={() => onSend(s.value)}
-            className="rounded-full border border-amber-400 bg-amber-50 px-3 py-1 text-sm text-amber-800 transition-colors hover:bg-amber-100 dark:border-amber-600 dark:bg-amber-950/30 dark:text-amber-300 dark:hover:bg-amber-900/40"
+            className="rounded-full border border-[#d4c9a8] bg-[#f5f0e1] px-4 py-1.5 text-sm font-medium text-[#2e0103] shadow-sm transition-colors hover:bg-[#ebe4cf] hover:shadow-md"
           >
             {s.label}
           </button>
@@ -92,26 +94,10 @@ function ToolPart({
 
   if (name === "suggest_options" && anyPart.output) {
     return (
-      <Tool defaultOpen={isOpen}>
-        {isStaticToolUIPart(part) ? (
-          <ToolHeader
-            type={part.type as ToolUIPart<UITools>["type"]}
-            state={part.state}
-            title="Forslag"
-          />
-        ) : (
-          <ToolHeader
-            type="dynamic-tool"
-            state={(part as DynamicToolUIPart).state}
-            toolName={name}
-            title="Forslag"
-          />
-        )}
-        <SuggestOptions
-          output={anyPart.output as SuggestionOutput}
-          onSend={onSend}
-        />
-      </Tool>
+      <SuggestOptions
+        output={anyPart.output as SuggestionOutput}
+        onSend={onSend}
+      />
     )
   }
 
@@ -231,10 +217,9 @@ export default function Page() {
 
   return (
     <div className="flex h-screen flex-col bg-background">
-      <header className="flex shrink-0 items-center justify-between border-b px-4 py-3">
+      <header className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3">
         <div className="flex items-center gap-2">
-          <BeerIcon className="size-5 text-amber-500" />
-          <span className="font-semibold">Beer AI</span>
+          <span className="dymo-label text-sm">Bogholderiet - AI</span>
         </div>
         <div className="flex items-center gap-2">
           {IS_DEV && (
