@@ -1,7 +1,8 @@
-import { z } from 'zod'
-import type OpenAI from 'openai'
-import { listBreweriesTool } from './brewery'
-import { listBeersTool, listCategoriesTool } from './beer'
+import { z } from "zod"
+import type OpenAI from "openai"
+import { listBreweriesTool } from "./brewery"
+import { listBeersTool, listCategoriesTool, listTasteTagsTool } from "./beer"
+import { suggestOptionsTool } from "./suggestions"
 
 export interface Tool {
   name: string
@@ -12,23 +13,33 @@ export interface Tool {
   execute: (params: any) => Promise<unknown>
 }
 
-const ALL_TOOLS: Tool[] = [listBreweriesTool, listBeersTool, listCategoriesTool]
+const ALL_TOOLS: Tool[] = [
+  listBreweriesTool,
+  listBeersTool,
+  listCategoriesTool,
+  listTasteTagsTool,
+  suggestOptionsTool,
+]
 
 const TOOL_MAP = new Map(ALL_TOOLS.map((t) => [t.name, t]))
 
 export function getToolDefinitions(): OpenAI.Chat.ChatCompletionTool[] {
   return ALL_TOOLS.map((tool) => {
-    const { $schema: _, ...parameters } = tool.parameters.toJSONSchema() as Record<string, unknown> & {
-      $schema?: string
-    }
+    const { $schema: _, ...parameters } =
+      tool.parameters.toJSONSchema() as Record<string, unknown> & {
+        $schema?: string
+      }
     return {
-      type: 'function' as const,
+      type: "function" as const,
       function: { name: tool.name, description: tool.description, parameters },
     }
   })
 }
 
-export async function executeTool(name: string, args: unknown): Promise<unknown> {
+export async function executeTool(
+  name: string,
+  args: unknown
+): Promise<unknown> {
   const tool = TOOL_MAP.get(name)
   if (!tool) throw new Error(`Unknown tool: ${name}`)
   const parsed = tool.parameters.parse(args)
