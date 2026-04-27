@@ -12,10 +12,10 @@
 
 import { z } from 'zod'
 import { zodTextFormat } from 'openai/helpers/zod'
-import { generateText } from 'ai'
-import { createOpenAI } from '@ai-sdk/openai'
+import { zodToJsonSchema } from 'zod-to-json-schema'
+import ollama from 'ollama'
 import { getClient } from './client'
-import { type Model, DEFAULT_BACKEND_MODEL, DEFAULT_OLLAMA_MODEL, OLLAMA_BASE_URL } from './models'
+import { type Model, DEFAULT_BACKEND_MODEL, DEFAULT_OLLAMA_MODEL } from './models'
 
 interface Options {
   model?: Model
@@ -103,23 +103,20 @@ export async function ollamaWebSearchStructured<T extends z.ZodType>(
   options: { model?: string; systemPrompt?: string } = {},
 ): Promise<z.infer<T>> {
   const searchResults = await ollamaWebSearch(prompt)
-  const ollamaClient = createOpenAI({ baseURL: OLLAMA_BASE_URL, apiKey: 'ollama' })
 
-  const jsonSchema = z.toJSONSchema(schema)
-  const system = [
-    options.systemPrompt,
-    `Respond with valid JSON only — no markdown, no explanation.\nRequired JSON schema:\n${JSON.stringify(jsonSchema)}`,
+  const messages: { role: 'system' | 'user'; content: string }[] = [
+    ...(options.systemPrompt ? [{ role: 'system' as const, content: options.systemPrompt }] : []),
+    { role: 'user' as const, content: `${prompt}\n\nSearch results:\n${searchResults}` },
   ]
-    .filter(Boolean)
-    .join('\n\n')
 
-  const { text } = await generateText({
-    model: ollamaClient(options.model ?? DEFAULT_OLLAMA_MODEL),
-    system,
-    prompt: `${prompt}\n\nSearch results:\n${searchResults}`,
+  const response = await ollama.chat({
+    model: options.model ?? DEFAULT_OLLAMA_MODEL,
+    messages,
+  
+    format: zodToJsonSchema(schema as any) as Record<string, unknown>,
+    options: { temperature: 0 },
   })
+  console.log("🚀 ~ ollamaWebSearchStructured ~ response:", response)
 
-  // Strip markdown code fences if the model wrapped the output
-  const jsonText = text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
-  return schema.parse(JSON.parse(jsonText)) as z.infer<T>
+  return schema.parse(JSON.parse(response.message.content)) as z.infer<T>
 }

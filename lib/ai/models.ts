@@ -3,6 +3,7 @@ export const Models = {
   GPT_54_NANO: "gpt-5.4-nano-2026-03-17",
   GEMMA4_E4B: "gemma4:e4b",
   GEMMA4_E2B: "gemma4:e2b",
+  GEMMA4_26B: "gemma4:26b",
 } as const
 
 export type Model = (typeof Models)[keyof typeof Models]
